@@ -22,6 +22,9 @@ app.use("/api/admin", adminRouter);
 app.use("/api/customer", customerRouter);
 app.use("/api/delivery", deliveryRouter);
 app.use("/api/restaurant", restaurantRouter);
+app.get('/', (req, res) => {
+    res.send('Welcome to Faizos API Project !');
+  });
 
 
 connectDatabase()
