@@ -3,10 +3,12 @@ const app = express();
 const swaggerSetup = require('./swagger');  
 require('dotenv').config();
 const cookieParser = require("cookie-parser");
+const cors = require('cors');
 
 
 app.use(express.json());
 app.use(cookieParser());
+app.use(cors());
 
 swaggerSetup(app); 
 
@@ -37,3 +39,5 @@ connectDatabase()
     .catch((err) => {
         console.log(`Unable to connect to database ${err}`)
     })
+
+module.exports = app;
