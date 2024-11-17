@@ -10,7 +10,7 @@ app.use(cookieParser());
 
 swaggerSetup(app); 
 
-const authRouter = require("./routes/auth");
+const authRouter = require("./routes/authRouter");
 const adminRouter = require("./routes/adminRouter");
 const customerRouter = require("./routes/customerRouter");
 const deliveryRouter = require("./routes/deliveryRouter");
