@@ -111,16 +111,22 @@ adminRouter.post("/logout", userAuth, isAdmin, async (req, res) => {
  *             properties:  
  *               firstName:  
  *                 type: string  
+ *                 example: Mohd
  *               lastName:  
  *                 type: string  
+ *                 example: Faiz
  *               emailId:  
  *                 type: string  
+ *                 example: mohdfaiz7862@gmail.com
  *               password:  
  *                 type: string  
+ *                 example: Faiz@123
  *               role:  
  *                 type: string  
+ *                 example: admin
  *               gender:  
- *                 type: string  
+ *                 type: string 
+ *                 example: male 
  *     responses:  
  *       200:  
  *         description: User Data added successfully  

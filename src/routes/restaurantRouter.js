@@ -24,6 +24,85 @@ async function isAdminOrRestaurant (userId) {
     }
 }
 
+/**
+ * @swagger
+ * /api/restaurant/register:
+ *   post:
+ *     tags: ["Restaurant"]
+ *     summary: Register a new restaurant
+ *     description: Registers a new restaurant with the provided data.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               firstName:
+ *                 type: string
+ *                 example: Mohd
+ *               lastName:
+ *                 type: string
+ *                 example: Faiz
+ *               emailId:
+ *                 type: string
+ *                 format: email
+ *                 example: mohdfaiz@example.com
+ *               password:
+ *                 type: string
+ *                 example: Faiz.7860
+ *               role:
+ *                 type: string
+ *                 enum: [restaurant]
+ *                 example: restaurant
+ *               gender:
+ *                 type: string
+ *                 enum: [male, female, other]
+ *                 example: male
+ *               restaurantName:
+ *                 type: string
+ *                 example: "Pizza Hub"
+ *               address:
+ *                 type: string
+ *                 example: "Laxmi Nagar, Delhi - 110031"
+ *               cuisineType:
+ *                 type: string
+ *                 example: "Italian"
+ *               openingHours:
+ *                 type: string
+ *                 example: "10 AM - 10 PM"
+ *               deliveryZone:
+ *                 type: string
+ *                 example: "North Delhi"
+ *     responses:
+ *       200:
+ *         description: Restaurant successfully registered
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Customer Data added successfully!"
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     user:
+ *                       $ref: '#/components/schemas/User'
+ *                     restaurant:
+ *                       $ref: '#/components/schemas/Restaurant'
+ *       400:
+ *         description: Validation or data error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "ERROR : <error message>"
+ */
 restaurantRouter.post("/register", async (req, res) => {
     try {
         // Validation of data
@@ -69,6 +148,66 @@ restaurantRouter.post("/register", async (req, res) => {
     }
 });
 
+/**
+ * @swagger
+ * /api/restaurant/register/{userId}:
+ *   post:
+ *     tags: ["Restaurant"]
+ *     summary: Register a restaurant under an existing user
+ *     description: Registers a restaurant for a user with the specified user ID.
+ *     parameters:
+ *       - name: userId
+ *         in: path
+ *         required: true
+ *         description: The ID of the user creating the restaurant
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               restaurantName:
+ *                 type: string
+ *                 example: "Pizza Hub"
+ *               address:
+ *                 type: string
+ *                 example: "Laxmi Nagar, Delhi - 110031"
+ *               cuisineType:
+ *                 type: string
+ *                 example: "Italian"
+ *               openingHours:
+ *                 type: string
+ *                 example: "10 AM - 10 PM"
+ *               deliveryZone:
+ *                 type: string
+ *                 example: "North Delhi"
+ *     responses:
+ *       200:
+ *         description: Restaurant successfully registered under user
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Restaurant added successfully!"
+ *                 data:
+ *                   $ref: '#/components/schemas/Restaurant'
+ *       400:
+ *         description: Invalid Authorization or Validation Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "ERROR : <error message>"
+ */
 restaurantRouter.post("/register/:userId", async (req, res) => {
     try {
         // Validation of data\
@@ -91,6 +230,51 @@ restaurantRouter.post("/register/:userId", async (req, res) => {
     }
 });
 
+/**
+ * @swagger
+ * /api/restaurant/login:
+ *   post:
+ *     tags: ["Restaurant"]
+ *     summary: Restaurant login
+ *     description: Login for restaurant users with their credentials.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               emailId:
+ *                 type: string
+ *                 format: email
+ *                 example: mohdfaiz@example.com
+ *               password:
+ *                 type: string
+ *                 example: Faiz.7860
+ *     responses:
+ *       200:
+ *         description: Successful login
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Login successful"
+ *                 data:
+ *                   $ref: '#/components/schemas/User'
+ *       400:
+ *         description: Invalid credentials or inactive account
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "ERROR : Invalid credentials"
+ */
 restaurantRouter.post("/login", async (req, res) => {
     try {
         const { emailId, password } = req.body;
@@ -123,6 +307,46 @@ restaurantRouter.post("/login", async (req, res) => {
     }
 });
 
+/**
+ * @swagger
+ * /api/restaurant/{userId}:
+ *   get:
+ *     tags: ["Restaurant"]
+ *     summary: Get restaurant details by user ID
+ *     description: Fetch restaurant details based on the owner’s user ID.
+ *     parameters:
+ *       - name: userId
+ *         in: path
+ *         required: true
+ *         description: User ID of the restaurant owner
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Successfully fetched restaurant details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Restaurant Found!!!"
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Restaurant'
+ *       400:
+ *         description: Unauthorized or Restaurant not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "ERROR : <error message>"
+ */
 restaurantRouter.get("/:userId", userAuth, async (req, res) => {
     try {
         isAdminOrRestaurant(req.params.userId);
@@ -134,6 +358,63 @@ restaurantRouter.get("/:userId", userAuth, async (req, res) => {
     }
 });
 
+/**
+ * @swagger
+ * /api/restaurant/{restaurantId}:
+ *   patch:
+ *     tags: ["Restaurant"]
+ *     summary: Update restaurant details
+ *     description: Updates specific details of an existing restaurant.
+ *     parameters:
+ *       - name: restaurantId
+ *         in: path
+ *         required: true
+ *         description: The ID of the restaurant to update
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               userId:
+ *                 type: string
+ *                 example: "605c72ef1532075ab5c7dbd"
+ *               restaurantName:
+ *                 type: string
+ *                 example: "New Pizza Hub"
+ *               address:
+ *                 type: string
+ *                 example: "Sector 15, Noida"
+ *               cuisineType:
+ *                 type: string
+ *                 example: "Mexican"
+ *               openingHours:
+ *                 type: string
+ *                 example: "9 AM - 11 PM"
+ *               deliveryZone:
+ *                 type: string
+ *                 example: "South Noida"
+ *     responses:
+ *       200:
+ *         description: Restaurant details updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Restaurant'
+ *       400:
+ *         description: Validation error or missing fields
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Error updating restaurant details"
+ */
 restaurantRouter.patch("/:restaurantId", userAuth, async (req, res) => {
     try {
         // Extract only the allowed fields from the request body
@@ -165,7 +446,46 @@ restaurantRouter.patch("/:restaurantId", userAuth, async (req, res) => {
 });
 
 
-
+/**
+ * @swagger
+ * /api/restaurant/menu/{userId}/{restaurantId}:
+ *   get:
+ *     tags: ["Restaurant"]
+ *     summary: Get menu items for a specific restaurant
+ *     description: Retrieves all menu items for a restaurant based on the restaurant ID.
+ *     parameters:
+ *       - name: userId
+ *         in: path
+ *         required: true
+ *         description: The user ID of the restaurant owner
+ *         schema:
+ *           type: string
+ *       - name: restaurantId
+ *         in: path
+ *         required: true
+ *         description: The ID of the restaurant whose menu is to be fetched
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: List of menu items for the restaurant
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Menu'
+ *       400:
+ *         description: Invalid user or restaurant ID
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "ERROR : Menu not found"
+ */
 restaurantRouter.get("/menu/:userId/:restaurantId", userAuth, async (req, res) => {
     try {
         isAdminOrRestaurant(req.params.userId);
@@ -177,6 +497,60 @@ restaurantRouter.get("/menu/:userId/:restaurantId", userAuth, async (req, res) =
     }
 });
 
+/**
+ * @swagger
+ * /api/restaurant/item/{userId}:
+ *   post:
+ *     tags: ["Restaurant"]
+ *     summary: Add a new item to the restaurant's menu
+ *     description: Allows restaurant owners to add new items to their menu.
+ *     parameters:
+ *       - name: userId
+ *         in: path
+ *         required: true
+ *         description: The ID of the restaurant owner
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               restaurant:
+ *                 type: string
+ *                 example: "605c72ef1532075ab5c7dbd"
+ *               itemName:
+ *                 type: string
+ *                 example: "Vegetarian Pizza"
+ *               description:
+ *                 type: string
+ *                 example: "A delicious pizza with fresh vegetables"
+ *               price:
+ *                 type: number
+ *                 example: 15.99
+ *               availability:
+ *                 type: boolean
+ *                 example: true
+ *     responses:
+ *       201:
+ *         description: Item added to the menu successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Menu'
+ *       400:
+ *         description: Missing required fields or invalid data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "ERROR : Invalid data"
+ */
 restaurantRouter.post("/item/:userId", userAuth, async (req, res) => {
     try {
         const { restaurant ,itemName, description, price, availability } = req.body;
@@ -196,6 +570,60 @@ restaurantRouter.post("/item/:userId", userAuth, async (req, res) => {
     }
 });
 
+/**
+ * @swagger
+ * /api/restaurant/item/{itemId}:
+ *   patch:
+ *     tags: ["Restaurant"]
+ *     summary: Update a menu item
+ *     description: Updates the details of a specific menu item.
+ *     parameters:
+ *       - name: itemId
+ *         in: path
+ *         required: true
+ *         description: The ID of the menu item to update
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               userId:
+ *                 type: string
+ *                 example: "605c72ef1532075ab5c7dbd"
+ *               itemName:
+ *                 type: string
+ *                 example: "New Vegetarian Pizza"
+ *               description:
+ *                 type: string
+ *                 example: "A healthier version of vegetarian pizza"
+ *               price:
+ *                 type: number
+ *                 example: 17.99
+ *               availability:
+ *                 type: boolean
+ *                 example: false
+ *     responses:
+ *       200:
+ *         description: Menu item updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Menu'
+ *       400:
+ *         description: Invalid or missing data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "ERROR : Item not found"
+ */
 restaurantRouter.patch("/item/:itemId", userAuth, async (req, res) => {
     try {
         // Extract only the allowed fields from the request body
@@ -226,6 +654,48 @@ restaurantRouter.patch("/item/:itemId", userAuth, async (req, res) => {
     }
 });
 
+/**
+ * @swagger
+ * /api/restaurant/item/{userId}/{menuItemId}:
+ *   delete:
+ *     tags: ["Restaurant"]
+ *     summary: Delete a menu item
+ *     description: Removes a specific item from the restaurant's menu.
+ *     parameters:
+ *       - name: userId
+ *         in: path
+ *         required: true
+ *         description: The user ID of the restaurant owner
+ *         schema:
+ *           type: string
+ *       - name: menuItemId
+ *         in: path
+ *         required: true
+ *         description: The ID of the menu item to delete
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Menu item deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Menu Item Deleted Successfully"
+ *       400:
+ *         description: Invalid request or item not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "ERROR : Menu Item not found"
+ */
 restaurantRouter.delete("/item/:userId/:menuItemId", userAuth, async (req, res) => {
 
     try {
@@ -241,6 +711,52 @@ restaurantRouter.delete("/item/:userId/:menuItemId", userAuth, async (req, res) 
     }
 });
 
+/**
+ * @swagger
+ * /api/restaurant/orders/{userId}/{restaurantId}/{status}:
+ *   get:
+ *     tags: ["Restaurant"]
+ *     summary: Get orders by status for a restaurant
+ *     description: Retrieves orders with a specific status for a restaurant.
+ *     parameters:
+ *       - name: userId
+ *         in: path
+ *         required: true
+ *         description: The user ID of the restaurant owner
+ *         schema:
+ *           type: string
+ *       - name: restaurantId
+ *         in: path
+ *         required: true
+ *         description: The restaurant ID
+ *         schema:
+ *           type: string
+ *       - name: status
+ *         in: path
+ *         required: true
+ *         description: The status of the orders (e.g., "pending", "completed")
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: List of orders with the specified status
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Order'
+ *       400:
+ *         description: Invalid request or no orders found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "ERROR : No orders found"
+ */
 restaurantRouter.get("/orders/:userId/:restaurantId/:status", userAuth, async (req, res) => {
     try {
         isAdminOrRestaurant(req.params.userId);
@@ -252,6 +768,51 @@ restaurantRouter.get("/orders/:userId/:restaurantId/:status", userAuth, async (r
     }
 });
 
+/**
+ * @swagger
+ * /api/restaurant/order/{orderId}:
+ *   patch:
+ *     tags: ["Restaurant"]
+ *     summary: Update an order status
+ *     description: Updates the status of a specific order.
+ *     parameters:
+ *       - name: orderId
+ *         in: path
+ *         required: true
+ *         description: The ID of the order to update
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               userId:
+ *                 type: string
+ *                 example: "605c72ef1532075ab5c7dbd"
+ *               orderStatus:
+ *                 type: string
+ *                 example: "completed"
+ *     responses:
+ *       200:
+ *         description: Order status updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Order'
+ *       400:
+ *         description: Invalid request or order not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "ERROR : Order not found"
+ */
 restaurantRouter.patch("/order/:orderId", async (req, res) => {
     try {
         // Extract only the allowed fields from the request body

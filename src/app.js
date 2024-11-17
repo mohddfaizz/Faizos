@@ -13,15 +13,15 @@ swaggerSetup(app);
 const authRouter = require("./routes/auth");
 const adminRouter = require("./routes/adminRouter");
 const customerRouter = require("./routes/customerRouter");
-const deliveryRoutes = require("./routes/deliveryRoutes");
+const deliveryRouter = require("./routes/deliveryRouter");
 const restaurantRouter = require("./routes/restaurantRouter");
 const connectDatabase = require('./configuration/databaseConnect');
 
+app.use("/api", authRouter)
 app.use("/api/admin", adminRouter);
-// app.use("/api/customer", customerRouter);
-// app.use("/api/deliveryy", deliveryRoutes);
-// app.use("/api/restaurant", restaurantRouter);
-// app.use("/api", authRouter)
+app.use("/api/customer", customerRouter);
+app.use("/api/delivery", deliveryRouter);
+app.use("/api/restaurant", restaurantRouter);
 
 
 connectDatabase()

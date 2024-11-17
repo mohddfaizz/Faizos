@@ -7,10 +7,10 @@ const options = {
     info: {  
       title: 'Faizos APIs',  
       version: '1.0.0',  
-      description: 'This is the Faizos API documentation.',  
+      description: 'This is a Food Delivery System called Faizos API documentation.',  
     },  
   },  
-  apis: ['./routes/*.js'],   
+  apis: ['./src/routes/*.js'],   
 };  
   
 const swaggerSpec = swaggerJSDoc(options);  

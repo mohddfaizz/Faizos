@@ -10,6 +10,65 @@ const bcrypt = require("bcrypt");
 const { userAuth } = require("../middlewares/auth");
 
 // Customer Registration
+/**
+ * @swagger
+ * /api/customer/register:
+ *   post:
+ *     summary: Register a new customer
+ *     description: This endpoint is used to register a new customer to the system.
+ *     tags: ["Customer"]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               firstName:
+ *                 type: string
+ *                 example: Mohd
+ *               lastName:
+ *                 type: string
+ *                 example: Faiz
+ *               emailId:
+ *                 type: string
+ *                 format: email
+ *                 example: mohdfaiz@example.com
+ *               password:
+ *                 type: string
+ *                 example: SecurePassword123
+ *               role:
+ *                 type: string
+ *                 enum: [customer]
+ *                 example: customer
+ *               gender:
+ *                 type: string
+ *                 enum: [male, female, other]
+ *                 example: male
+ *     responses:
+ *       200:
+ *         description: Customer successfully registered
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Customer registered successfully!"
+ *                 data:
+ *                   $ref: '#/components/schemas/User'
+ *       400:
+ *         description: Bad request or validation error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "ERROR : Invalid data or missing required fields"
+ */
 customerRouter.post("/register", async (req, res) => {
     try {
         validateSignUpData(req);
@@ -42,6 +101,51 @@ customerRouter.post("/register", async (req, res) => {
 });
 
 // Customer Login
+/**
+ * @swagger
+ * /api/customer/login:
+ *   post:
+ *     summary: Customer login
+ *     description: This endpoint is used for customer login and returns a JWT token.
+ *     tags: ["Customer"]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               emailId:
+ *                 type: string
+ *                 format: email
+ *                 example: mohdfaiz@example.com
+ *               password:
+ *                 type: string
+ *                 example: SecurePassword123
+ *     responses:
+ *       200:
+ *         description: Customer logged in successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Login successful"
+ *                 data:
+ *                   $ref: '#/components/schemas/User'
+ *       400:
+ *         description: Invalid credentials or account status
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "ERROR : Invalid credentials"
+ */
 customerRouter.post("/login", async (req, res) => {
     try {
         const { emailId, password } = req.body;
@@ -92,7 +196,99 @@ customerRouter.post("/login", async (req, res) => {
 // });
 
 // Add Delivery Address
-
+/**
+ * @swagger
+ * /api/customer/users/{userId}/delivery-addresses:
+ *   post:
+ *     summary: Add a new delivery address
+ *     description: This endpoint is used to add a new delivery address for a customer.
+ *     tags: ["Customer"]
+ *     parameters:
+ *       - name: userId
+ *         in: path
+ *         required: true
+ *         description: The unique identifier of the customer
+ *         schema:
+ *           type: string
+ *           example: 60d5ecf441f3c7a27f4f4d45
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               firstName:
+ *                 type: string
+ *                 example: Mohd
+ *               lastName:
+ *                 type: string
+ *                 example: Faiz
+ *               addressLine1:
+ *                 type: string
+ *                 example: "Laxmi Nagar"
+ *               addressLine2:
+ *                 type: string
+ *                 example: "Block D, Flat 3"
+ *               city:
+ *                 type: string
+ *                 example: "Delhi"
+ *               state:
+ *                 type: string
+ *                 example: "Delhi"
+ *               country:
+ *                 type: string
+ *                 example: "India"
+ *               postalCode:
+ *                 type: string
+ *                 example: "110031"
+ *               isDefault:
+ *                 type: boolean
+ *                 example: true
+ *     responses:
+ *       201:
+ *         description: Address added successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Delivery address added successfully"
+ *                 address:
+ *                   $ref: '#/components/schemas/DeliveryAddress'
+ *       400:
+ *         description: Missing required fields or invalid data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "ERROR : Missing required field: city"
+ *       404:
+ *         description: User not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "ERROR : User not found"
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "ERROR : Failed to save address"
+ */
 customerRouter.post('/users/:userId/delivery-addresses', userAuth, async (req, res) => {
     try {
         const user = await User.findById(req.params.userId);
@@ -131,6 +327,97 @@ customerRouter.post('/users/:userId/delivery-addresses', userAuth, async (req, r
 });
 
 // Update Delivery Address
+
+/**
+ * @swagger
+ * /api/customer/users/{userId}/delivery-addresses/{addressId}:
+ *   put:
+ *     summary: Update an existing delivery address
+ *     description: This endpoint is used to update an existing delivery address for a customer.
+ *     tags: ["Customer"]
+ *     parameters:
+ *       - name: userId
+ *         in: path
+ *         required: true
+ *         description: The unique identifier of the customer
+ *         schema:
+ *           type: string
+ *           example: 60d5ecf441f3c7a27f4f4d45
+ *       - name: addressId
+ *         in: path
+ *         required: true
+ *         description: The unique identifier of the address
+ *         schema:
+ *           type: string
+ *           example: 60d7c87b7393f7d6d0a56d97
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               firstName:
+ *                 type: string
+ *                 example: Mohd
+ *               lastName:
+ *                 type: string
+ *                 example: Faiz
+ *               addressLine1:
+ *                 type: string
+ *                 example: "Laxmi Nagar"
+ *               addressLine2:
+ *                 type: string
+ *                 example: "Flat 3, Block C"
+ *               city:
+ *                 type: string
+ *                 example: "Delhi"
+ *               state:
+ *                 type: string
+ *                 example: "Delhi"
+ *               country:
+ *                 type: string
+ *                 example: "India"
+ *               postalCode:
+ *                 type: string
+ *                 example: "110031"
+ *               isDefault:
+ *                 type: boolean
+ *                 example: false
+ *     responses:
+ *       200:
+ *         description: Address updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Address updated successfully"
+ *                 address:
+ *                   $ref: '#/components/schemas/DeliveryAddress'
+ *       404:
+ *         description: User or address not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "ERROR : Address not found"
+ *       500:
+ *         description: Failed to update address
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "ERROR : Internal server error"
+ */
 customerRouter.put('/users/:userId/delivery-addresses/:addressId', userAuth, async (req, res) => {
     try {
         const { userId, addressId } = req.params;
@@ -168,6 +455,50 @@ customerRouter.put('/users/:userId/delivery-addresses/:addressId', userAuth, asy
 
 
 // Delete Delivery Address
+/**
+ * @swagger
+ * /api/customer/users/{userId}/delivery-addresses/{addressId}:
+ *   delete:
+ *     summary: Delete a delivery address
+ *     description: This endpoint is used to delete an existing delivery address for a customer.
+ *     tags: ["Customer"]
+ *     parameters:
+ *       - name: userId
+ *         in: path
+ *         required: true
+ *         description: The unique identifier of the customer
+ *         schema:
+ *           type: string
+ *           example: 60d5ecf441f3c7a27f4f4d45
+ *       - name: addressId
+ *         in: path
+ *         required: true
+ *         description: The unique identifier of the address to be deleted
+ *         schema:
+ *           type: string
+ *           example: 60d7c87b7393f7d6d0a56d97
+ *     responses:
+ *       200:
+ *         description: Address deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Delivery address deleted successfully"
+ *       404:
+ *         description: Address not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "ERROR : Address not found"
+ */
 customerRouter.delete('/users/:userId/delivery-addresses/:addressId', userAuth, async (req, res) => {
     try {
         const { userId, addressId } = req.params;
@@ -186,6 +517,35 @@ customerRouter.delete('/users/:userId/delivery-addresses/:addressId', userAuth, 
 
 
 // Logout
+/**
+ * @swagger
+ * /api/customer/logout:
+ *   post:
+ *     summary: Logout customer
+ *     description: This endpoint is used for logging out a customer and clearing the authentication token.
+ *     tags: ["Customer"]
+ *     responses:
+ *       200:
+ *         description: Successfully logged out
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Logout successful!"
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "ERROR : Failed to log out"
+ */
 customerRouter.post("/logout", userAuth, (req, res) => {
     res.cookie("token", null, {
         expires: new Date(Date.now()),
@@ -194,6 +554,33 @@ customerRouter.post("/logout", userAuth, (req, res) => {
 });
 
 // Browse Restaurants
+/**
+ * @swagger
+ * /api/customer/restaurants:
+ *   get:
+ *     summary: List all restaurants
+ *     description: This endpoint retrieves all available restaurants.
+ *     tags: ["Customer"]
+ *     responses:
+ *       200:
+ *         description: List of restaurants successfully fetched
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Restaurant'
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "ERROR : Failed to fetch restaurants"
+ */
 customerRouter.get("/restaurants", userAuth, async (req, res) => {
     try {
         const restaurants = await Restaurant.find({});
@@ -204,6 +591,48 @@ customerRouter.get("/restaurants", userAuth, async (req, res) => {
 });
 
 // Search Menus
+/**
+ * @swagger
+ * /api/customer/restaurants/search:
+ *   get:
+ *     summary: Search restaurants by menu or type
+ *     description: This endpoint searches restaurants based on menu item name or restaurant type.
+ *     tags: ["Customer"]
+ *     parameters:
+ *       - name: query
+ *         in: query
+ *         required: false
+ *         description: Search query for menu item name or restaurant type
+ *         schema:
+ *           type: string
+ *           example: "Pizza"
+ *       - name: filter
+ *         in: query
+ *         required: false
+ *         description: Filter restaurants based on type (e.g., fast food, fine dining)
+ *         schema:
+ *           type: string
+ *           example: "Italian"
+ *     responses:
+ *       200:
+ *         description: List of restaurants based on search criteria
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Restaurant'
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "ERROR : Failed to search restaurants"
+ */
 customerRouter.get("/restaurants/search", userAuth, async (req, res) => {
     try {
         const { query, filter } = req.query;
@@ -244,6 +673,71 @@ customerRouter.get("/restaurants/search", userAuth, async (req, res) => {
 //     }
 // });
 
+/**
+ * @swagger
+ * /api/customer/orders:
+ *   post:
+ *     summary: Place a new order
+ *     description: This endpoint allows customers to place a new order.
+ *     tags: ["Customer"]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               restaurantId:
+ *                 type: string
+ *                 example: "60d7c87b7393f7d6d0a56d88"
+ *               items:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     itemId:
+ *                       type: string
+ *                       example: "60d7c87b7393f7d6d0a56d89"
+ *                     quantity:
+ *                       type: integer
+ *                       example: 2
+ *               deliveryAddressId:
+ *                 type: string
+ *                 example: "60d7c87b7393f7d6d0a56d97"
+ *     responses:
+ *       201:
+ *         description: Order placed successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Order placed successfully"
+ *                 order:
+ *                   $ref: '#/components/schemas/Order'
+ *       400:
+ *         description: Missing or invalid request data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "ERROR : Missing required fields"
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "ERROR : Failed to place order"
+ */
 customerRouter.post("/orders", userAuth, async (req, res) => {
     try {
         console.log(req.body); // Check the received request body
@@ -267,6 +761,53 @@ customerRouter.post("/orders", userAuth, async (req, res) => {
 
 
 // Track Orders
+/**
+ * @swagger
+ * /api/customer/orders/{orderId}/track:
+ *   get:
+ *     summary: Track an order's status
+ *     description: This endpoint tracks the status of an order.
+ *     tags: ["Customer"]
+ *     parameters:
+ *       - name: orderId
+ *         in: path
+ *         required: true
+ *         description: The unique identifier of the order to track
+ *         schema:
+ *           type: string
+ *           example: "60d7c87b7393f7d6d0a56d97"
+ *     responses:
+ *       200:
+ *         description: Successfully fetched the order's status
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "Preparing"
+ *       404:
+ *         description: Order not found or unauthorized access
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "ERROR : Order not found"
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "ERROR : Failed to fetch order status"
+ */
 customerRouter.get("/orders/:orderId/track", userAuth, async (req, res) => {
     try {
         const order = await Order.findById(req.params.orderId);
@@ -281,6 +822,33 @@ customerRouter.get("/orders/:orderId/track", userAuth, async (req, res) => {
 });
 
 // View Order History
+/**
+ * @swagger
+ * /api/customer/orders/history:
+ *   get:
+ *     summary: View order history
+ *     description: This endpoint retrieves the order history for the customer.
+ *     tags: ["Customer"]
+ *     responses:
+ *       200:
+ *         description: Successfully fetched order history
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Order'
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "ERROR : Failed to fetch order history"
+ */
 customerRouter.get("/orders/history", userAuth, async (req, res) => {
     try {
         const orders = await Order.find({ userId: req.user._id });
